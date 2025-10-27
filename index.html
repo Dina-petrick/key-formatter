@@ -3,45 +3,70 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Resul-TS API Key Encoder</title>
+  <title>Resul-TS API Key Encoder / Decoder</title>
   <style>
     body {
       font-family: "Inter", sans-serif;
       background: radial-gradient(circle at 10% 10%, #1e293b, #0f172a);
       color: #e2e8f0;
       margin: 0;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 20px;
+      gap: 20px;
     }
+
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 30px;
+      color: #f1f5f9;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      max-width: 1100px;
+      width: 100%;
+    }
+
     .card {
+      flex: 1 1 450px;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 16px;
       padding: 24px;
-      max-width: 500px;
-      width: 100%;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
-    h1 {
+
+    .card h2 {
+      font-size: 1.4rem;
       text-align: center;
-      font-size: 1.5rem;
       margin-bottom: 8px;
     }
-    p {
+
+    .card p {
       text-align: center;
       font-size: 0.9rem;
       color: #94a3b8;
-      margin-bottom: 24px;
+      margin-bottom: 12px;
     }
+
     label {
       font-size: 0.85rem;
       color: #94a3b8;
       display: block;
       margin-bottom: 6px;
     }
+
     input {
       width: 95%;
       padding: 10px 12px;
@@ -51,8 +76,9 @@
       color: #e2e8f0;
       font-size: 0.95rem;
       outline: none;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
+
     button {
       width: 100%;
       background: linear-gradient(90deg, #7c3aed, #06b6d4);
@@ -65,11 +91,12 @@
       transition: 0.3s;
       font-size: 1rem;
     }
+
     button:hover {
       opacity: 0.9;
     }
+
     .result {
-      margin-top: 18px;
       background: rgba(255, 255, 255, 0.05);
       padding: 12px;
       border-radius: 10px;
@@ -77,10 +104,10 @@
       font-family: monospace;
       display: flex;
       flex-direction: column;
-      gap: 30px;
       align-items: center;
-      justify-content: space-between;
+      gap: 10px;
     }
+
     .copy-btn {
       background: transparent;
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -89,45 +116,74 @@
       padding: 6px 10px;
       cursor: pointer;
       transition: 0.2s;
+      font-size: 0.85rem;
     }
+
     .copy-btn:hover {
       color: white;
       border-color: white;
     }
+
     .info {
       text-align: center;
       font-size: 0.8rem;
       color: #64748b;
-      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Resul-TS Key Generator</h1>
-    <p>Enter your API key and generate a secure encoded key.</p>
+  <h1>Resul-TS API Key Encoder / Decoder</h1>
 
-    <label for="apikey">Enter API Key:</label>
-    <input id="apikey" type="password" placeholder="e.g. 161342s5-742a-4c95-b50d-81b924d6bd7e" />
+  <div class="container">
+    <!-- Encode Section -->
+    <div class="card">
+      <h2>🔒 Encode Key</h2>
+      <p>Enter your original API key to generate a secure Resul-TS encoded key.</p>
 
-    <button id="generate">Generate Encoded Key</button>
+      <label for="encodeKey">API Key:</label>
+      <input id="encodeKey" type="password" placeholder="e.g. 161342s5-742a-4c95-b50d-81b924d6bd7e" />
 
-    <div class="result" id="output">
-      <span id="encoded">Your encoded key will appear here.</span>
-      <button class="copy-btn" id="copyBtn">Copy</button>
+      <button id="encodeBtn">Generate Encoded Key</button>
+
+      <div class="result" id="encodeResult">
+        <span id="encodedText">Your encoded key will appear here.</span>
+        <button class="copy-btn" id="copyEncoded">Copy</button>
+      </div>
+
+      <div class="info" id="encodeInfo"></div>
     </div>
 
-    <div class="info" id="info"></div>
+    <!-- Decode Section -->
+    <div class="card">
+      <h2>🔓 Decode Key</h2>
+      <p>Enter your Resul-TS encoded key to get the original API key back.</p>
+
+      <label for="decodeKey">Encoded Key:</label>
+      <input id="decodeKey" type="text" placeholder="e.g. Resul-TS-xxxxx" />
+
+      <button id="decodeBtn">Decode Key</button>
+
+      <div class="result" id="decodeResult">
+        <span id="decodedText">Decoded API key will appear here.</span>
+        <button class="copy-btn" id="copyDecoded">Copy</button>
+      </div>
+
+      <div class="info" id="decodeInfo"></div>
+    </div>
   </div>
 
   <script>
-    const generateBtn = document.getElementById('generate');
-    const apikeyInput = document.getElementById('apikey');
-    const output = document.getElementById('encoded');
-    const copyBtn = document.getElementById('copyBtn');
-    const info = document.getElementById('info');
+    const encodeBtn = document.getElementById('encodeBtn');
+    const decodeBtn = document.getElementById('decodeBtn');
+    const encodeInput = document.getElementById('encodeKey');
+    const decodeInput = document.getElementById('decodeKey');
+    const encodedText = document.getElementById('encodedText');
+    const decodedText = document.getElementById('decodedText');
+    const encodeInfo = document.getElementById('encodeInfo');
+    const decodeInfo = document.getElementById('decodeInfo');
+    const copyEncoded = document.getElementById('copyEncoded');
+    const copyDecoded = document.getElementById('copyDecoded');
 
-    // Function to generate random string with letters, numbers, symbols
     function randomString(length) {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=';
       let result = '';
@@ -141,32 +197,68 @@
       return btoa(unescape(encodeURIComponent(str)));
     }
 
-    generateBtn.addEventListener('click', () => {
-      const apiKey = apikeyInput.value.trim();
+    function safeAtob(str) {
+      try {
+        return decodeURIComponent(escape(atob(str)));
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // Encode
+    encodeBtn.addEventListener('click', () => {
+      const apiKey = encodeInput.value.trim();
       if (!apiKey) {
-        output.textContent = 'Please enter your API key first.';
-        info.textContent = '';
+        encodedText.textContent = 'Please enter your API key first.';
+        encodeInfo.textContent = '';
         return;
       }
-
       const threeLetter = randomString(3);
       const twoLetter = randomString(2);
       const encoded = safeBtoa(threeLetter + apiKey + twoLetter);
       const finalKey = `Resul-TS-${encoded}`;
 
-      output.textContent = finalKey;
-      info.textContent = `Generated with random prefix "${threeLetter}" and suffix "${twoLetter}"`;
+      encodedText.textContent = finalKey;
+      encodeInfo.textContent = `Generated with prefix "${threeLetter}" and suffix "${twoLetter}"`;
     });
 
-    copyBtn.addEventListener('click', () => {
-      const text = output.textContent.trim();
-      if (!text || text.includes('Your encoded key')) return;
+    // Decode
+    decodeBtn.addEventListener('click', () => {
+      const inputVal = decodeInput.value.trim();
+      if (!inputVal.startsWith("Resul-TS-")) {
+        decodedText.textContent = "Invalid format! The key must start with 'Resul-TS-'.";
+        decodeInfo.textContent = '';
+        return;
+      }
 
+      const base64Part = inputVal.replace("Resul-TS-", "");
+      const decoded = safeAtob(base64Part);
+      if (!decoded || decoded.length < 5) {
+        decodedText.textContent = "Decoding failed or invalid key.";
+        decodeInfo.textContent = '';
+        return;
+      }
+
+      const originalApiKey = decoded.slice(3, -2);
+      const prefix = decoded.slice(0, 3);
+      const suffix = decoded.slice(-2);
+
+      decodedText.textContent = originalApiKey;
+      decodeInfo.textContent = `Decoded successfully! Prefix: "${prefix}" | Suffix: "${suffix}"`;
+    });
+
+    // Copy buttons
+    function handleCopy(textElement, button) {
+      const text = textElement.textContent.trim();
+      if (!text || text.includes('will appear here')) return;
       navigator.clipboard.writeText(text).then(() => {
-        copyBtn.textContent = 'Copied!';
-        setTimeout(() => copyBtn.textContent = 'Copy', 1500);
+        button.textContent = 'Copied!';
+        setTimeout(() => button.textContent = 'Copy', 1500);
       });
-    });
+    }
+
+    copyEncoded.addEventListener('click', () => handleCopy(encodedText, copyEncoded));
+    copyDecoded.addEventListener('click', () => handleCopy(decodedText, copyDecoded));
   </script>
 </body>
 </html>
